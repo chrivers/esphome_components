@@ -30,9 +30,15 @@ void NilanClimate::setup() {
 
   this->current_temperature = current_temp_sensor_->state;
   this->target_temperature  = temp_setpoint_number_->state;
-  size_t current_mode_index = static_cast<size_t>(mode_select_->active_index().value());
-  nilanmodetext_to_climatemode(current_mode_index);
-  nilanfanspeed_to_fanmode(static_cast<int>(fan_speed_number_->state)); // Will update either fan_mode or custom_fan_mode
+
+  auto current_mode_index = mode_select_->active_index();
+  if (current_mode_index.has_value()) {
+    nilanmodetext_to_climatemode(current_mode_index.value());
+  } else {
+    ESP_LOGW(TAG, "Mode select has no active index during setup; defaulting climate mode to OFF until state arrives");
+    this->mode = climate::CLIMATE_MODE_OFF;
+  }
+  nilanfanspeed_to_fanmode(fan_speed_number_->state); // Will update either fan_mode or custom_fan_mode
 }
 
 void NilanClimate::control(const climate::ClimateCall& call) {
@@ -106,6 +112,7 @@ climate::ClimateTraits NilanClimate::traits() {
   });
 
   traits.set_supported_modes({
+    climate::ClimateMode::CLIMATE_MODE_OFF,
     climate::ClimateMode::CLIMATE_MODE_COOL,
     climate::ClimateMode::CLIMATE_MODE_HEAT,
     climate::ClimateMode::CLIMATE_MODE_HEAT_COOL
