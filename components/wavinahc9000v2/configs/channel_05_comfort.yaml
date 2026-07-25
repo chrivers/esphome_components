@@ -4,7 +4,7 @@ sensor:
     name:                   ${name} Comfort Temperature ${channel_05_friendly_name}
     id:                     ${device}_comfort_temp_${channel_05_id}
     modbus_controller_id:   ${device}_modbus_controller
-    custom_command: 
+    custom_command:
       - 0x01
       - 0x43
       - 0x01
@@ -35,7 +35,7 @@ number:
     id:                     ${device}_comfort_target_temp_${channel_05_id}
     modbus_controller_id:   ${device}_modbus_controller
     internal: true
-    custom_command: 
+    custom_command:
       - 0x01
       - 0x43
       - 0x02
@@ -79,9 +79,9 @@ switch:
       payload.push_back(0x01);
       payload.push_back(0x45);
       payload.push_back(0x02);
-      payload.push_back(0x07); 
-      payload.push_back(${channel_05});       
-      payload.push_back(0x03); 
+      payload.push_back(0x07);
+      payload.push_back(${channel_05});
+      payload.push_back(0x03);
       if(x)
       {
         ESP_LOGD("main","Pushing back 0x01 because state is %s",ONOFF(x));
@@ -99,7 +99,7 @@ switch:
       return true;
     lambda: |-
       if (data.size() < 4) return false;
-      uint16_t mode = (data[2] << 8) | data[3];    
+      uint16_t mode = (data[2] << 8) | data[3];
       return (mode & 0x01) != 0;
 
 # ----------- Climate ----------- #
