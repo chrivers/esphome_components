@@ -16,11 +16,11 @@ sensor:
     accuracy_decimals: 1
     device_class: temperature
     lambda: |-
-      if (data.size() < 4) {
+      if (data.size() < 3) {
         ESP_LOGW("wavinahc9000v2", "Comfort temp response too short (%d bytes)", data.size());
         return NAN;
       }
-      uint16_t raw_temp = (data[2] << 8) | data[3];
+      uint16_t raw_temp = (data[1] << 8) | data[2];
       float temp_c = raw_temp * 0.1f;
       if (temp_c < 1.0f || temp_c > 90.0f) {
         ESP_LOGW("wavinahc9000v2", "Comfort temp out of range: %.1f C (raw=%d), ignoring", temp_c, raw_temp);
@@ -98,8 +98,8 @@ switch:
       payload.push_back((~MODE_MASK) & 0xFF);
       return true;
     lambda: |-
-      if (data.size() < 4) return false;
-      uint16_t mode = (data[2] << 8) | data[3];
+      if (data.size() < 3) return false;
+      uint16_t mode = (data[1] << 8) | data[2];
       return (mode & 0x01) != 0;
 
 # ----------- Climate ----------- #
